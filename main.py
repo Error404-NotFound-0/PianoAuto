@@ -18,17 +18,25 @@ garantir_bibliotecas("pyautogui")
 
 
 import tkinter as tk
+from tkinter import messagebox
 import pyautogui as pg
 import time
 
 pg.PAUSE = 0.05
+
+
 # lógica
+
+
 def iniciar():
+    pausa = verificar_dados()
+    if pausa is None:
+        return
     time.sleep(2)
     acorde = []
     dentro_acorde = False
     partitura = entrada_partitura.get()
-    pausa = entrada_pausa.get()
+
     for i in partitura:
         if i == ' ' or i == '\n':
             pg.sleep(pausa)
@@ -47,7 +55,14 @@ def iniciar():
             pg.press(i)
     exit
 
-
+def verificar_dados():
+    pausa = entrada_pausa.get()
+    try:
+        pausa_validada = int(pausa)
+        return pausa_validada
+    except:
+        messagebox.showerror('Erro de entrada', 'Insira apenas numeros inteiros no campo de pausa.')
+        return None
 
 # interface
 janela = tk.Tk()
@@ -63,4 +78,3 @@ entrada_pausa.pack(pady=10)
 botao_iniciar = tk.Button(janela, text='Iniciar', command=iniciar)
 botao_iniciar.pack(pady=10)
 janela.mainloop()
-
