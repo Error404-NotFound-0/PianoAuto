@@ -1,6 +1,8 @@
 import subprocess
 import sys
 import importlib
+import os
+import threading 
 
 def garantir_bibliotecas(*pacotes):
     for pacote in pacotes:
@@ -26,10 +28,19 @@ pg.PAUSE = 0.05
 
 
 # lógica
+executando = False
 
+def thread():
+    threading.Thread(target=iniciar).start()
+
+def parar():
+    global executando 
+    executando = False
 
 def iniciar():
     pausa = verificar_dados()
+    global executando
+    executando = True
     if pausa is None:
         return
     time.sleep(2)
@@ -38,7 +49,8 @@ def iniciar():
     partitura = entrada_partitura.get()
 
     for i in partitura:
-        if i == ' ' or i == '\n':
+        if not executando: break
+        elif i == ' ' or i == '\n':
             pg.sleep(pausa)
             continue
         elif i == '[':
@@ -53,7 +65,6 @@ def iniciar():
             acorde.append(i)
         else:
             pg.press(i)
-    exit
 
 def verificar_dados():
     pausa = entrada_pausa.get()
@@ -75,6 +86,8 @@ texto_pausa = tk.Label(janela, text='Coloque o valor da pausa aqui abaixo:')
 texto_pausa.pack(pady=5)
 entrada_pausa = tk.Entry(janela)
 entrada_pausa.pack(pady=10)
-botao_iniciar = tk.Button(janela, text='Iniciar', command=iniciar)
+botao_iniciar = tk.Button(janela, text='Iniciar', command=thread)
 botao_iniciar.pack(pady=10)
+botao_parar = tk.Button(janela, text='Parar', command=parar)
+botao_parar.pack(pady=10)
 janela.mainloop()
